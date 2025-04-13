@@ -10,7 +10,6 @@ export class NestjsFlagsService {
 
   constructor(
     private readonly configService: ConfigService,
-    // @ts-ignore
     @Inject(NESTJS_FLAGS_CONFIG_OPTIONS)
     private readonly options: Required<NestjsFlagsOptions>
   ) {

@@ -14,6 +14,11 @@ const defaultExceptionFactory = (flagName: string) =>
 
 @Module({})
 export class NestjsFlagsModule {
+  /**
+   * Synchronously loads feature flags from a configuration source.
+   * @param options The configuration options for the feature flags.
+   * @returns A dynamic module for the NestJS module.
+   */
   static forRoot(options?: NestjsFlagsOptions): DynamicModule {
     const mergedOptions: Required<NestjsFlagsOptions> = {
       flagsKey: options?.flagsKey ?? "featureFlags",
@@ -34,6 +39,11 @@ export class NestjsFlagsModule {
     };
   }
 
+  /**
+   * Asynchronously loads feature flags from a configuration source.
+   * @param options The configuration options for the feature flags.
+   * @returns A dynamic module for the NestJS module.
+   */
   static forRootAsync(options: {
     imports?: any[];
     useFactory: (
@@ -63,6 +73,12 @@ export class NestjsFlagsModule {
     };
   }
 
+  /**
+   * Automatically loads feature flags from environment variables.
+   * @param prefix The prefix for the environment variables.
+   * @param options The optional configuration options for the feature flags.
+   * @returns A dynamic module for the NestJS module.
+   */
   static autoLoadFromEnv(
     prefix = "FEATURE_FLAGS_",
     options?: NestjsFlagsOptions
