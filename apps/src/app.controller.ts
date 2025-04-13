@@ -4,7 +4,7 @@ import {
   FeatureFlag,
   FeatureFlagGuard,
   NestjsFlagsService,
-} from '../libs/nestjs-flags/src';
+} from '../../libs/nestjs-flags/src';
 
 @Controller()
 export class AppController {

@@ -1,0 +1,55 @@
+{
+  "name": "nestjs-flags",
+  "version": "0.0.1",
+  "description": "A flexible feature flag module for NestJS applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
+  },
+  "keywords": [
+    "nestjs",
+    "feature flag",
+    "feature toggle",
+    "flags",
+    "toggle",
+    "config",
+    "guard",
+    "decorator"
+  ],
+  "author": "Nika Shamiladze",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asyncfinkd/nestjs-flags.git"
+  },
+  "homepage": "https://github.com/asyncfinkd/nestjs-flags#readme",
+  "bugs": {
+    "url": "https://github.com/asyncfinkd/nestjs-flags/issues"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "@nestjs/core": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "@nestjs/config": "^1.0.0 || ^2.0.0 || ^3.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.0.0"
+  }
+}
