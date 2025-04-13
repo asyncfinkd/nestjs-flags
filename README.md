@@ -4,6 +4,9 @@
   <p align="center">
     A flexible feature flag module for NestJS applications. Easily manage feature toggles using decorators and configuration.
   </p>
+
+[![npm version](https://badge.fury.io/js/nestjs-flags.svg)](https://badge.fury.io/js/nestjs-flags) [![Build Status](https://travis-ci.org/your-username/nestjs-flags.svg?branch=main)](https://travis-ci.org/your-username/nestjs-flags) [![Coverage Status](https://coveralls.io/repos/github/your-username/nestjs-flags/badge.svg?branch=main)](https://coveralls.io/github/your-username/nestjs-flags?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 </p>
 
 ## Description
