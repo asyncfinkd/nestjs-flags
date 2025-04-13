@@ -47,6 +47,7 @@
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@types/node": "^22.14.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
     "typescript": "^5.0.0"
