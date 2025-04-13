@@ -1,10 +1,10 @@
-import { SetMetadata } from '@nestjs/common';
-import { FEATURE_FLAG_KEY } from '../constants';
+import { SetMetadata } from "@nestjs/common";
+import { FEATURE_FLAG_KEY } from "../constants";
 
 /**
- * Attaches feature flag metadata to the target method or class.
- * Used in conjunction with the FeatureFlagGuard.
- * @param flagName The key of the feature flag to check.
+ * Decorator that marks a route as requiring a specific feature flag to be enabled
+ * @param flagName The name of the feature flag to check
  */
-export const FeatureFlag = (flagName: string) =>
-  SetMetadata(FEATURE_FLAG_KEY, flagName);
+export const FeatureFlag = (flagName: string) => {
+  return SetMetadata(FEATURE_FLAG_KEY, flagName);
+};
