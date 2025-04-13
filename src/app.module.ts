@@ -4,7 +4,7 @@ import {
   Provider,
   NotFoundException,
 } from "@nestjs/common";
-import { NestjsFlagsService } from "./nestjs-flags.service";
+import { NestjsFlagsService } from "./app.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { NestjsFlagsOptions } from "./interfaces/nestjs-flags-option.interface";
 import { NESTJS_FLAGS_CONFIG_OPTIONS } from "./constants";

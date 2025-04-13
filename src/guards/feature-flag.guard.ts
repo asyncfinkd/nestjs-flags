@@ -6,7 +6,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { NestjsFlagsService } from "../nestjs-flags.service";
+import { NestjsFlagsService } from "../app.service";
 import { FEATURE_FLAG_KEY, NESTJS_FLAGS_CONFIG_OPTIONS } from "../constants";
 import { NestjsFlagsOptions } from "../interfaces/nestjs-flags-option.interface";
 
