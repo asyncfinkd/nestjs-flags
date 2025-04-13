@@ -58,12 +58,6 @@ yarn add nestjs-flags
         }),
 
         NestjsFlagsModule.autoLoadFromEnv(),
-
-        NestjsFlagsModule.forRoot({
-          // Optional: Customize options here (see Configuration section)
-          // example:
-          // exceptionFactory: (flagName) => new ForbiddenException(`Flag ${flagName} is disabled!`),
-        }),
       ],
       controllers: [AppController],
       providers: [AppService],
