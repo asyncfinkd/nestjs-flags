@@ -1,99 +1,150 @@
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+  <p align="center">
+    A flexible feature flag module for NestJS applications. Easily manage feature toggles using decorators and configuration.
+  </p>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+`nestjs-flags` provides a simple way to implement feature flags (also known as feature toggles) in your NestJS application. It integrates with the standard `@nestjs/config` module to load flag statuses and offers a Guard and Decorator (`@FeatureFlag`) to control access to routes based on whether a feature is enabled or disabled.
 
-## Project setup
+## Features
 
-```bash
-$ pnpm install
-```
+- Loads flags from configuration (via `@nestjs/config`).
+- Provides `NestjsFlagsService` for imperative flag checks.
+- Provides `@FeatureFlag()` decorator and `FeatureFlagGuard` for declarative route protection.
+- Configurable via `forRoot` options (custom config key, custom exception on disabled flag).
+- Written in TypeScript with types included.
+- Unit tested.
 
-## Compile and run the project
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
-
-## Run tests
+## Installation
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+npm install nestjs-flags
+# or
+yarn add nestjs-flags
 ```
 
-## Deployment
+## Quick Start
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1.  **Configure your flags:**
+    Set up your flag configuration source, for example, using a `.env` file:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+    ```dotenv
+    # Feature flags (prefix matches default 'featureFlags' key mapping)
+    FEATURE_FLAGS_NEW_USER_PROFILE=true
+    FEATURE_FLAGS_EXPERIMENTAL_SEARCH=false
+    ```
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
+2.  **Import `ConfigModule` and `NestjsFlagsModule`:**
+    In your main application module (e.g., `app.module.ts`), import and configure `@nestjs/config` and `NestjsFlagsModule`.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+    ```typescript
+    // src/app.module.ts
+    import { Module, ForbiddenException } from '@nestjs/common';
+    import { ConfigModule } from '@nestjs/config';
+    import { AppController } from './app.controller';
+    import { AppService } from './app.service';
+    import { NestjsFlagsModule } from 'nestjs-flags'; // Import the module
 
-## Resources
+    // Helper function to load and parse flags from process.env
+    const featureFlagsConfig = () => ({
+      featureFlags: {
+        newUserProfile: process.env.FEATURE_FLAGS_NEW_USER_PROFILE === 'true',
+        experimentalSearch:
+          process.env.FEATURE_FLAGS_EXPERIMENTAL_SEARCH === 'true',
+      },
+      port: parseInt(process.env.PORT, 10) || 3000,
+    });
 
-Check out a few resources that may come in handy when working with NestJS:
+    const loadedConfig = featureFlagsConfig();
+    const cleanFeatureFlags = {};
+    if (loadedConfig.featureFlags) {
+      Object.keys(loadedConfig.featureFlags).forEach((key) => {
+        const envVarName = `FEATURE_FLAGS_${key.replace(/([A-Z])/g, '_$1').toUpperCase()}`;
+        if (process.env[envVarName] !== undefined) {
+          cleanFeatureFlags[key] = loadedConfig.featureFlags[key];
+        }
+      });
+    }
+    const finalConfig = () => ({
+      ...loadedConfig,
+      featureFlags: cleanFeatureFlags,
+    });
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+    @Module({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: '.env',
+          load: [finalConfig],
+        }),
+        NestjsFlagsModule.forRoot({
+          // Optional: Customize options here (see Configuration section)
+          // example:
+          // exceptionFactory: (flagName) => new ForbiddenException(`Flag ${flagName} is disabled!`),
+        }),
+      ],
+      controllers: [AppController],
+      providers: [AppService],
+    })
+    export class AppModule {}
+    ```
 
-## Support
+3.  **Use the Service or Decorator:**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+    - **Using `NestjsFlagsService`:** Inject the service to check flags programmatically.
 
-## Stay in touch
+      ```typescript
+      // src/app.controller.ts
+      import { Controller, Get, Logger } from '@nestjs/common';
+      import { NestjsFlagsService } from 'nestjs-flags';
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+      @Controller('service-example')
+      export class ServiceExampleController {
+        constructor(private readonly flagsService: NestjsFlagsService) {}
 
-## License
+        @Get('feature')
+        getFeature() {
+          if (this.flagsService.isFeatureEnabled('newUserProfile')) {
+            return { message: 'New user profile is available!' };
+          } else {
+            return { message: 'Showing the old profile.' };
+          }
+        }
+      }
+      ```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+    - **Using `@FeatureFlag` Decorator and Guard:** Protect entire routes declaratively.
+
+      ```typescript
+      // src/app.controller.ts
+      import { Controller, Get, UseGuards, Logger } from '@nestjs/common';
+      import { FeatureFlag, FeatureFlagGuard } from 'nestjs-flags';
+
+      @Controller('decorator-example')
+      export class DecoratorExampleController {
+        private readonly logger = new Logger(DecoratorExampleController.name);
+
+        @Get('profile')
+        @UseGuards(FeatureFlagGuard) // Activate the guard
+        @FeatureFlag('newUserProfile') // Specify the flag to check
+        getProfileFeature() {
+          // This code only runs if 'newUserProfile' is true
+          this.logger.log('Guard allowed access to profile.');
+          return { message: 'Showing the NEW user profile!' };
+        }
+
+        @Get('search')
+        @UseGuards(FeatureFlagGuard)
+        @FeatureFlag('experimentalSearch')
+        getSearchFeature() {
+          // This code only runs if 'experimentalSearch' is true
+          // If false, the guard throws an exception (NotFoundException by default)
+          this.logger.log('Guard allowed access to search.');
+          return { message: 'Using the EXPERIMENTAL search!' };
+        }
+      }
+      ```
