@@ -2,12 +2,13 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  NotFoundException,
+  Inject,
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { NestjsFlagsService } from '..';
-import { FEATURE_FLAG_KEY } from '../constants';
+import { NestjsFlagsService } from '../nestjs-flags.service';
+import { FEATURE_FLAG_KEY, NESTJS_FLAGS_CONFIG_OPTIONS } from '../constants';
+import { NestjsFlagsOptions } from '../interfaces/nestjs-flags-option.interface';
 
 @Injectable()
 export class FeatureFlagGuard implements CanActivate {
@@ -16,6 +17,8 @@ export class FeatureFlagGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly flagsService: NestjsFlagsService,
+    @Inject(NESTJS_FLAGS_CONFIG_OPTIONS)
+    private readonly options: Required<NestjsFlagsOptions>,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -31,7 +34,6 @@ export class FeatureFlagGuard implements CanActivate {
     this.logger.debug(
       `Checking feature flag "${requiredFlag}" for route access.`,
     );
-
     const isEnabled = this.flagsService.isFeatureEnabled(requiredFlag);
 
     if (isEnabled) {
@@ -41,11 +43,9 @@ export class FeatureFlagGuard implements CanActivate {
       return true;
     } else {
       this.logger.warn(
-        `Feature flag "${requiredFlag}" is disabled. Access denied (throwing NotFoundException).`,
+        `Feature flag "${requiredFlag}" is disabled. Access denied.`,
       );
-      throw new NotFoundException(
-        `Feature '${requiredFlag}' is not available.`,
-      );
+      throw this.options.exceptionFactory(requiredFlag);
     }
   }
 }

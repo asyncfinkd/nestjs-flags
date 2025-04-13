@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { NestjsFlagsModule } from '../libs/nestjs-flags/src';
+import { NestjsFlagsModule } from 'libs/nestjs-flags/src';
 
 const featureFlagsConfig = () => ({
   featureFlags: {
@@ -13,14 +13,32 @@ const featureFlagsConfig = () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
 });
 
+const loadedConfig = featureFlagsConfig();
+const cleanFeatureFlags = {};
+if (loadedConfig.featureFlags) {
+  Object.keys(loadedConfig.featureFlags).forEach((key) => {
+    const envVarName = `FEATURE_FLAGS_${key.replace(/([A-Z])/g, '_$1').toUpperCase()}`;
+    if (process.env[envVarName] !== undefined) {
+      cleanFeatureFlags[key] = loadedConfig.featureFlags[key];
+    }
+  });
+}
+const finalConfig = () => ({
+  ...loadedConfig,
+  featureFlags: cleanFeatureFlags,
+});
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [featureFlagsConfig],
+      load: [finalConfig],
     }),
-    NestjsFlagsModule,
+    NestjsFlagsModule.forRoot({
+      exceptionFactory: (flagName) =>
+        new ForbiddenException(`Access denied by feature flag: ${flagName}`),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

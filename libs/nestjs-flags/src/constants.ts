@@ -1,1 +1,2 @@
 export const FEATURE_FLAG_KEY = 'featureFlag';
+export const NESTJS_FLAGS_CONFIG_OPTIONS = 'NESTJS_FLAGS_CONFIG_OPTIONS';

@@ -1,11 +1,21 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NESTJS_FLAGS_CONFIG_OPTIONS } from './constants';
+import { NestjsFlagsOptions } from './interfaces/nestjs-flags-option.interface';
 
 @Injectable()
 export class NestjsFlagsService {
   private readonly logger = new Logger(NestjsFlagsService.name);
+  private readonly flagsKey: string;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(NESTJS_FLAGS_CONFIG_OPTIONS)
+    private readonly options: Required<NestjsFlagsOptions>,
+  ) {
+    this.flagsKey = this.options.flagsKey;
+    this.logger.log(`Using configuration key for flags: "${this.flagsKey}"`);
+  }
 
   /**
    * Checks if a specific feature flag is enabled in the configuration.
@@ -15,7 +25,7 @@ export class NestjsFlagsService {
    * @returns True if the flag is explicitly set to true, false otherwise.
    */
   isFeatureEnabled(featureKey: string): boolean {
-    const flagPath = `featureFlags.${featureKey}`;
+    const flagPath = `<span class="math-inline">\{this\.flagsKey\}\.</span>{featureKey}`;
     const isEnabled = this.configService.get<boolean>(flagPath);
 
     if (isEnabled === undefined) {
