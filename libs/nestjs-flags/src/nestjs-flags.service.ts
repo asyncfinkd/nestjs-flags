@@ -1,7 +1,7 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { NESTJS_FLAGS_CONFIG_OPTIONS } from './constants';
-import { NestjsFlagsOptions } from './interfaces/nestjs-flags-option.interface';
+import { Injectable, Inject, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { NestjsFlagsOptions } from "./interfaces/nestjs-flags-option.interface";
+import { NESTJS_FLAGS_CONFIG_OPTIONS } from "./constants";
 
 @Injectable()
 export class NestjsFlagsService {
@@ -10,8 +10,9 @@ export class NestjsFlagsService {
 
   constructor(
     private readonly configService: ConfigService,
+    // @ts-ignore
     @Inject(NESTJS_FLAGS_CONFIG_OPTIONS)
-    private readonly options: Required<NestjsFlagsOptions>,
+    private readonly options: Required<NestjsFlagsOptions>
   ) {
     this.flagsKey = this.options.flagsKey;
     this.logger.log(`Using configuration key for flags: "${this.flagsKey}"`);
@@ -25,12 +26,12 @@ export class NestjsFlagsService {
    * @returns True if the flag is explicitly set to true, false otherwise.
    */
   isFeatureEnabled(featureKey: string): boolean {
-    const flagPath = `<span class="math-inline">\{this\.flagsKey\}\.</span>{featureKey}`;
+    const flagPath = `${this.flagsKey}.${featureKey}`;
     const isEnabled = this.configService.get<boolean>(flagPath);
 
     if (isEnabled === undefined) {
       this.logger.debug(
-        `Feature flag "${featureKey}" not found in config (path: ${flagPath}). Defaulting to disabled.`,
+        `Feature flag "${featureKey}" not found in config (path: ${flagPath}). Defaulting to disabled.`
       );
       return false;
     }
