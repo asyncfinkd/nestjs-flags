@@ -43,44 +43,22 @@ yarn add nestjs-flags
 
     ```typescript
     // src/app.module.ts
-    import { Module, ForbiddenException } from '@nestjs/common';
-    import { ConfigModule } from '@nestjs/config';
-    import { AppController } from './app.controller';
-    import { AppService } from './app.service';
-    import { NestjsFlagsModule } from 'nestjs-flags'; // Import the module
-
-    // Helper function to load and parse flags from process.env
-    const featureFlagsConfig = () => ({
-      featureFlags: {
-        newUserProfile: process.env.FEATURE_FLAGS_NEW_USER_PROFILE === 'true',
-        experimentalSearch:
-          process.env.FEATURE_FLAGS_EXPERIMENTAL_SEARCH === 'true',
-      },
-      port: parseInt(process.env.PORT, 10) || 3000,
-    });
-
-    const loadedConfig = featureFlagsConfig();
-    const cleanFeatureFlags = {};
-    if (loadedConfig.featureFlags) {
-      Object.keys(loadedConfig.featureFlags).forEach((key) => {
-        const envVarName = `FEATURE_FLAGS_${key.replace(/([A-Z])/g, '_$1').toUpperCase()}`;
-        if (process.env[envVarName] !== undefined) {
-          cleanFeatureFlags[key] = loadedConfig.featureFlags[key];
-        }
-      });
-    }
-    const finalConfig = () => ({
-      ...loadedConfig,
-      featureFlags: cleanFeatureFlags,
-    });
+    import { Module, ForbiddenException } from "@nestjs/common";
+    import { ConfigModule } from "@nestjs/config";
+    import { AppController } from "./app.controller";
+    import { AppService } from "./app.service";
+    import { NestjsFlagsModule } from "nestjs-flags"; // Import the module
 
     @Module({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: '.env',
+          envFilePath: ".env",
           load: [finalConfig],
         }),
+
+        NestjsFlagsModule.autoLoadFromEnv(),
+
         NestjsFlagsModule.forRoot({
           // Optional: Customize options here (see Configuration section)
           // example:
@@ -99,19 +77,19 @@ yarn add nestjs-flags
 
       ```typescript
       // src/app.controller.ts
-      import { Controller, Get, Logger } from '@nestjs/common';
-      import { NestjsFlagsService } from 'nestjs-flags';
+      import { Controller, Get, Logger } from "@nestjs/common";
+      import { NestjsFlagsService } from "nestjs-flags";
 
-      @Controller('service-example')
+      @Controller("service-example")
       export class ServiceExampleController {
         constructor(private readonly flagsService: NestjsFlagsService) {}
 
-        @Get('feature')
+        @Get("feature")
         getFeature() {
-          if (this.flagsService.isFeatureEnabled('newUserProfile')) {
-            return { message: 'New user profile is available!' };
+          if (this.flagsService.isFeatureEnabled("newUserProfile")) {
+            return { message: "New user profile is available!" };
           } else {
-            return { message: 'Showing the old profile.' };
+            return { message: "Showing the old profile." };
           }
         }
       }
@@ -121,30 +99,30 @@ yarn add nestjs-flags
 
       ```typescript
       // src/app.controller.ts
-      import { Controller, Get, UseGuards, Logger } from '@nestjs/common';
-      import { FeatureFlag, FeatureFlagGuard } from 'nestjs-flags';
+      import { Controller, Get, UseGuards, Logger } from "@nestjs/common";
+      import { FeatureFlag, FeatureFlagGuard } from "nestjs-flags";
 
-      @Controller('decorator-example')
+      @Controller("decorator-example")
       export class DecoratorExampleController {
         private readonly logger = new Logger(DecoratorExampleController.name);
 
-        @Get('profile')
+        @Get("profile")
         @UseGuards(FeatureFlagGuard) // Activate the guard
-        @FeatureFlag('newUserProfile') // Specify the flag to check
+        @FeatureFlag("newUserProfile") // Specify the flag to check
         getProfileFeature() {
           // This code only runs if 'newUserProfile' is true
-          this.logger.log('Guard allowed access to profile.');
-          return { message: 'Showing the NEW user profile!' };
+          this.logger.log("Guard allowed access to profile.");
+          return { message: "Showing the NEW user profile!" };
         }
 
-        @Get('search')
+        @Get("search")
         @UseGuards(FeatureFlagGuard)
-        @FeatureFlag('experimentalSearch')
+        @FeatureFlag("experimentalSearch")
         getSearchFeature() {
           // This code only runs if 'experimentalSearch' is true
           // If false, the guard throws an exception (NotFoundException by default)
-          this.logger.log('Guard allowed access to search.');
-          return { message: 'Using the EXPERIMENTAL search!' };
+          this.logger.log("Guard allowed access to search.");
+          return { message: "Using the EXPERIMENTAL search!" };
         }
       }
       ```
