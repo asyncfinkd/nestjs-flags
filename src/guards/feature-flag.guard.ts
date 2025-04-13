@@ -8,7 +8,7 @@ import {
 import { Reflector } from "@nestjs/core";
 import { NestjsFlagsService } from "../app.service";
 import { FEATURE_FLAG_KEY, NESTJS_FLAGS_CONFIG_OPTIONS } from "../constants";
-import { NestjsFlagsOptions } from "../interfaces/nestjs-flags-option.interface";
+import { NestjsFlagsOptions } from "../interfaces/nestjs-flags-options.interface";
 
 @Injectable()
 export class FeatureFlagGuard implements CanActivate {

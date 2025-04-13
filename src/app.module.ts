@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { NestjsFlagsService } from "./app.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { NestjsFlagsOptions } from "./interfaces/nestjs-flags-option.interface";
+import { NestjsFlagsOptions } from "./interfaces/nestjs-flags-options.interface";
 import { NESTJS_FLAGS_CONFIG_OPTIONS } from "./constants";
 
 const defaultExceptionFactory = (flagName: string) =>
