@@ -83,7 +83,10 @@ yarn add nestjs-flags
 
         @Get("feature")
         getFeature() {
-          if (this.flagsService.isFeatureEnabled("newUserProfile")) {
+          const isNewUserProfileEnabled =
+            this.flagsService.isFeatureEnabled("newUserProfile");
+
+          if (isNewUserProfileEnabled) {
             return { message: "New user profile is available!" };
           } else {
             return { message: "Showing the old profile." };
